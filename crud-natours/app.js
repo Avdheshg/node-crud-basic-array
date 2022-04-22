@@ -96,6 +96,25 @@ app.patch("/:id", (req, res) => {
 
 });
 
+app.delete("/tours/:id", (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+
+    // const index = tours[id];
+    // console.log("index: ", index);
+
+    tours.splice(id, 1);
+    console.log(tours);
+
+    fs.writeFile('./tours-simple.json', JSON.stringify(tours), err => {
+        res.status(200).json({
+            status: "success",
+            result: tours.length,
+            tours
+        }); 
+    });
+});
+
 
 
 
