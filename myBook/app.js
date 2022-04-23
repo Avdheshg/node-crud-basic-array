@@ -10,9 +10,23 @@ app.use(express.json());
 const books = JSON.parse(fs.readFileSync("./books.json", "utf-8"));
 // console.log(books);
 
-// reading all books
-app.get("/allBooks", (req, res) => {
-    /*
+// MW
+app.use((req, res, next) => {
+    console.log("1. Hello from the MW");
+
+    // console.log("")
+
+    next();
+    console.log("Will give error");
+});                                               
+
+console.log("2. After the MW");
+
+// Defining Route Handler functions
+const getAllBooks = (req, res) => {
+
+    console.log("3. In getAllBooks route \n==================================");
+    /* 
         Read the json file, require fs
         parse it to string
         send json with length
@@ -21,13 +35,12 @@ app.get("/allBooks", (req, res) => {
         status: "success",
         results: books.length,
         books
-    })
-    
-});
-
-// creating a new book
-app.post("/allBooks", (req, res) => {
-    console.log(req.params.newBook);
+    });  
+}
+                       
+const createBook = (req, res) => {
+    // console.log(req.params.newBook); 
+    console.log("4. In createBook route \n ******************** ");
 
     /*
     Algo;
@@ -40,7 +53,7 @@ app.post("/allBooks", (req, res) => {
 
     const newBook = req.body;
     books.push(newBook);
-    console.log(books);
+    // console.log(books);
 
     fs.writeFile("./books.json", JSON.stringify(books), err => {
         res.status(201).json({
@@ -49,10 +62,10 @@ app.post("/allBooks", (req, res) => {
             books
         });
     })
-});
-
-// updating a book
-app.patch("/allBooks/:authorName", (req, res) => {
+}
+                                              
+const updateBook = (req, res) => {
+    console.log("5. In updateBook route \n -------------------------------- ");
     /*
         Get the value passed into the params 
         find that book in array, TR the whole array and save the foundBook into an var
@@ -61,7 +74,7 @@ app.patch("/allBooks/:authorName", (req, res) => {
         send the response 
     */
     const authorName = req.params.authorName;
-    console.log(authorName);
+    // console.log(authorName);
 
     let foundBook = "";
     books.map(book => {
@@ -69,8 +82,8 @@ app.patch("/allBooks/:authorName", (req, res) => {
             foundBook = book;
         }
     });
-    foundBook.author = req.body.author;
-    console.log("foundBook: ", foundBook);
+    foundBook.author = req.body.author;             
+    // console.log("foundBook: ", foundBook);
     books.push(foundBook);
 
     fs.writeFile("./books.json", JSON.stringify(books), err => {
@@ -80,13 +93,38 @@ app.patch("/allBooks/:authorName", (req, res) => {
             books
         })
     })
-});
+}
 
-app.delete("/allBooks/:authorName", (req, res) => {
+const deleteBook = (req, res) => {
+    console.log("6. In deleteBook route \n ####################################### ");
+    // console.log("Book deleted");
+    res.status(200).json({
+        status: "success",
+        message: "Book is deleted"
+    })    
+}
 
-    
-})
+// // reading all books
+// app.get("/allBooks", getAllBooks);
+// // creating a new book
+// app.post("/allBooks", createBook);
 
+// // updating a book
+// app.patch("/allBooks/:authorName", updateBook);
+// // Deleting a book
+// app.delete("/allBooks/:authorName", deleteBook);
+
+// Defining route for "/allBooks"
+app
+    .route("/allBooks")
+    .get(getAllBooks)
+    .post(createBook); 
+
+// Route for "/allBooks/:authorName"
+app     
+    .route("/allBooks/:authorName")
+    .patch(updateBook)
+    .delete(deleteBook);
 
 
 
