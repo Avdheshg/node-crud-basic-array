@@ -116,8 +116,6 @@ app.delete("/tours/:id", (req, res) => {
 });
 
 
-
-
 const port = 4000;
 app.listen(port, () => {
     console.log(`App is running on the port ${port}`);

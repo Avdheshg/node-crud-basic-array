@@ -1,4 +1,4 @@
-
+// 16
 
 const express = require("express");
 const fs = require("fs");
@@ -14,7 +14,7 @@ const books = JSON.parse(fs.readFileSync("./books.json", "utf-8"));
 app.use((req, res, next) => {
     console.log("1. Hello from the MW");
 
-    // console.log("")
+    console.log("res: ", req);
 
     next();
     console.log("Will give error");
@@ -25,7 +25,7 @@ console.log("2. After the MW");
 // Defining Route Handler functions
 const getAllBooks = (req, res) => {
 
-    console.log("3. In getAllBooks route \n==================================");
+    // console.log("3. In getAllBooks route \n==================================");
     /* 
         Read the json file, require fs
         parse it to string
@@ -97,14 +97,29 @@ const updateBook = (req, res) => {
 
 const deleteBook = (req, res) => {
     console.log("6. In deleteBook route \n ####################################### ");
-    // console.log("Book deleted");
-    res.status(200).json({
-        status: "success",
-        message: "Book is deleted"
-    })    
+    
+    const authorName = req.params.authorName;  
+    console.log("Author name: " ,authorName);
+
+    // TR the array, remove the book with the author name and save the new array into the JSON
+    const filteredBooks = books.filter((book) => {
+        // console.log(book);
+        // console.log("book.authorName: ", book.authorName, " authorName: " + authorName );
+        return book.author !== authorName
+    });
+
+    fs.writeFile("./books.json", JSON.stringify(filteredBooks), err => {
+        res.status(200).json({
+            results: filteredBooks.length,
+            filteredBooks: filteredBooks
+        })
+    })
+
+   
+    // console.log(newBooks);
 }
 
-// // reading all books
+// // reading all books                                                                                                   
 // app.get("/allBooks", getAllBooks);
 // // creating a new book
 // app.post("/allBooks", createBook);
